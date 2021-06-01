@@ -1,5 +1,5 @@
 # Airline-passenger-referral-prediction
-1.2 OBJECTIVE :
+#1.2 OBJECTIVE :
 
 The main objective of this project is to predict whether passengers will refer the airline to their friends. In this project we deployed multiple machine learning models to see the performance.  
 
@@ -11,20 +11,20 @@ The main objective of this project is to predict whether passengers will refer t
 
 The next chapters have the following sections: 
 
-Section 1 - Understanding data 
-Section 2 - Data preparation
-Section 3 - Exploratory data analysis 
-Section 4-  Imputation of NaN values
-Section 4 - Feature Engineering
-Section 5 - Working different models
-Section 6 - Evaluating model 
-Section 7 - Conclusions
+###Section 1 - Understanding data 
+###Section 2 - Data preparation
+###Section 3 - Exploratory data analysis 
+###Section 4-  Imputation of NaN values
+###Section 4 - Feature Engineering
+###Section 5 - Working different models
+###Section 6 - Evaluating model 
+###Section 7 - Conclusions
 
 
 
-##CHAPTER 2 -  UNDERSTANDING DATA  AND DATA PREPARATION
+#CHAPTER 2 -  UNDERSTANDING DATA  AND DATA PREPARATION
 
-2.1 UNDERSTANDING DATA:
+###2.1 UNDERSTANDING DATA:
 
 
 This snapshot is taken from the skytrax website. The customer who travelled can give reviews and can also add review text. 
@@ -47,7 +47,7 @@ recommended: Binary, target variable.
 
 Mount the drive and load the  file 
 
-# Mounting drive
+Mounting drive
 from google.colab import drive
 drive.mount('/content/drive')
 
@@ -55,7 +55,7 @@ missing_values = ['N/a', 'na', 'np-nan', ‘None’, ‘none’]
 
 After mounting the drive the next step is to import the required libraries. Python has a wide number of libraries which makes the work easier. Here pandas, numpy, matplotlib, seaborn, math, nltk, sklearn  etc., libraries are used.
 
-# importing libraries
+importing libraries
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
@@ -73,12 +73,12 @@ import dateutil
 import importlib
 
 
-#Reading data
+Reading data
 data = pd.read_excel("/content/drive/MyDrive/Almabetter/Cohort Nilgiri/capstone projects/capstone-3/Copy of data_airline_reviews.xlsx", na_values= missing_values)
 
 The file is in .xlsx format. So read_excel is used.
 
-#Shape of dataset
+Shape of dataset
 data.shape
 
 The shape of data is (131895,17)
@@ -86,7 +86,7 @@ The shape of data is (131895,17)
 
 The next step after seeing this dataset  is to check the number of null values.
 
-# Checking for null values
+ Checking for null values
 data.isnull().sum()
 
 The data set contains a higher number of null values. Data cleaning has become highly essential.
@@ -97,14 +97,14 @@ In this step the first foremost thing we are interested in is cleaning data.
 
  Dropping rows having entire row as Nan
 
-# Dropping rows if the entire row is null
+ Dropping rows if the entire row is null
 data.dropna(how = 'all',inplace = True)
 
 Looks like all the odd rows are left empty in excel so the no.of rows having complete Nan in the row are more.
 
 Dropping columns which don't add value for the analysis
 
-# Removing columns that are not required
+ Removing columns that are not required
 data.drop(columns = ['aircraft','author'],inplace = True) 
 
 The Reason behind dropping aircraft are 
@@ -113,7 +113,7 @@ The Reason behind dropping aircraft are
  
 To make the columns names understandable they are renamed
 
-# Renaming columns
+ Renaming columns
 data.rename(columns={'overall':'review_score', 'customer_review':'review_text'}, inplace=True)
 
 Dropping duplicates
@@ -147,7 +147,7 @@ To impute these null values we need to do some plotting. To understand the data 
 
 
 
-CHAPTER 3 - EXPLORATORY DATA ANALYSIS
+#CHAPTER 3 - EXPLORATORY DATA ANALYSIS
 
 The primary goal of EDA is to support the analysis of data prior to making any conclusions. It may aid in the detection of apparent errors, as well as a deeper understanding of data patterns, the detection of outliers or anomalous events, and the discovery of interesting relationships between variables.
 
@@ -159,7 +159,7 @@ def scaled_feature(feature_to_be_scaled):
 
 3.1 STACKED PLOTS
 
-#Stacked plot of rating features
+Stacked plot of rating features
 def stacked_plot(feat):
   ''' Stacked plot of rating features'''
   x = airline_data.groupby([airline_data['review_score']])
@@ -206,7 +206,7 @@ For imputing independent variables we can draw conclusions from these graphs.
 
 
 
-CHAPTER 4 : IMPUTATION OF NAN VALUES AND FEATURE ENGINEERING
+#CHAPTER 4 : IMPUTATION OF NAN VALUES AND FEATURE ENGINEERING
 
 4.1 IMPUTATION OF NAN VALUES OF INDEPENDENT VARIABLES :
 
@@ -216,7 +216,7 @@ The first part here is dealing with NaN values in independent variables.
 4.1.1  Filling review_score :  To fill this take the average of the review_ features and round off to get a rating from 1-10.
 
  
-# Filling review_score
+ Filling review_score
 y = airline_data.drop(columns = 'review_score')
 airline_data['avg'] = round(y.mean(axis=1))
 airline_data['review_score'].fillna(value= airline_data['avg'],inplace = True)
@@ -236,7 +236,7 @@ airline_data['value_for_money'].fillna(value= airline_data['review_score'],inpla
 
 Now we have rows which don't have any filled columns of rating columns. There were 143 rows . For them we choose to drop. As all the features are empty there is no way we can take value from them.
 
-# re-ordering the index as rows are removed
+ re-ordering the index as rows are removed
 airline_data.reset_index(drop=True,inplace = True)
  
 
@@ -244,7 +244,7 @@ airline_data.reset_index(drop=True,inplace = True)
 
 4.1.3 One-hot encoding :  With the help of one hot encoding can fill the NaNs in travel type and cabin type. This encoding creates dummy variables for each unique value present in the feature and fills them with 1 and 0 based on the presence.
 
-# Filling travel_type and cabin type
+Filling travel_type and cabin type
 airline_data= pd.concat([airline_data,pd.get_dummies(airline_data['traveller_type'])],axis=1)
 airline_data= pd.concat([airline_data,pd.get_dummies(airline_data['cabin'])],axis=1)
 
@@ -256,17 +256,17 @@ To impute NaN values in the recommended column the method used is using the revi
 
 Model - Naive Bayes classifier
 
-# creating a separate dataset to perform 
-# data for naive bayes model
+creating a separate dataset to perform 
+data for naive bayes model
 text_df= airline_data[['customer_review','recommended']]
 
-# Adding a feature in text df based on string length of the review text
+ Adding a feature in text df based on string length of the review text
 text_df['review_len']= text_df['customer_review'].str.len()
  
 
 
 
-# doing groupby to plot bar graphs on bases of yes and no
+ doing groupby to plot bar graphs on bases of yes and no
 GN= text_df.groupby('recommended')
 for name , name_df in GN:
   print(name)
@@ -279,13 +279,13 @@ We can draw the conclusion from the above boxplot that as the length of the text
 
  TEXT PROCESSING
 
-# import re for regularExpression
-# importing natural language toolkit
+ import re for regularExpression
+ importing natural language toolkit
 import re
 import nltk
-# importing stopwords from nltk corpus
+ importing stopwords from nltk corpus
 from nltk.corpus import stopwords
-# downloading all stopwords
+ downloading all stopwords
 nltk.download('stopwords')
 nltk.download('wordnet')
  
@@ -296,20 +296,20 @@ lemmatizer = WordNetLemmatizer()
 
  
 def text_cleaning(data):
-  #remove all special character
+  remove all special character
   processed_feature = re.sub(r'\W', ' ', str(data))
  
-  # remove all single characters
+   remove all single characters
   processed_feature= re.sub(r'\s+[a-zA-Z]\s+', ' ', processed_feature)
-  # Remove single characters from the start
+  Remove single characters from the start
   processed_feature = re.sub(r'\^[a-zA-Z]\s+', ' ', processed_feature) 
- # Substituting multiple spaces with single space
+  Substituting multiple spaces with single space
   processed_feature = re.sub(r'\s+', ' ', processed_feature, flags=re.I)
-# Removing prefixed 'b'
+ Removing prefixed 'b'
   processed_feature = re.sub(r'^b\s+', '', processed_feature)
-# Converting to Lowercase
+ Converting to Lowercase
   processed_feature = processed_feature.lower()
- # removing stopword
+  removing stopword
   processed_feature = processed_feature.split(' ')
   processed_feature = [lemmatizer.lemmatize(i) for i in processed_feature]
   processed_feature = ' '.join([i for i in processed_feature if i not in stop_words])
@@ -322,7 +322,7 @@ text_df['tokenized_mess'] = text_df['customer_review'].apply(text_cleaning)
 
 After text cleaning  to deploy a model first thing is to separate test and train set
 
-# New dataframes
+ New dataframes
 text_df_1 = text_df.dropna() 
 text_df_2 = text_df[text_df['recommended'].isna()]
  
@@ -330,13 +330,13 @@ text_df_2 = text_df[text_df['recommended'].isna()]
  
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.model_selection import train_test_split
-#Creating testing and training dataset
+Creating testing and training dataset
 X_train,X_test,y_train,y_test = train_test_split(text_df_1['tokenized_mess'],text_df_1['recommended'],test_size=0.25)
 
 TF-idf vectorization -
 
-# there are more than 10K features 
-# setting max_features to 7500 for system performance 
+ there are more than 10K features 
+ setting max_features to 7500 for system performance 
 vectorization = TfidfVectorizer(max_features=7500,min_df=7,max_df=0.8)
 
 X_train = vectorization.fit_transform(X_train).toarray()
@@ -345,23 +345,23 @@ X_test = vectorization.transform(X_test).toarray()
 from sklearn.naive_bayes import GaussianNB
 from sklearn.naive_bayes import MultinomialNB
 from sklearn.naive_bayes import BernoulliNB
-# Importing Classification report
+ Importing Classification report
 from sklearn.metrics import classification_report
 
-GaussianNB
-#Applying Gaussian naive bayes
+##GaussianNB
+Applying Gaussian naive bayes
 GNB  = GaussianNB().fit(X_train,y_train)
 y_train_pred_gnb = GNB.predict(X_train)
 y_test_pred_gnb = GNB.predict(X_test)
 
-MultinomialNB
-#Applying Multinomial Naive bayes
+##MultinomialNB
+Applying Multinomial Naive bayes
 MNB = MultinomialNB().fit(X_train,y_train)
 y_train_pred_mnb = MNB.predict(X_train)
 y_test_pred_mnb = MNB.predict(X_test)
 
-BernoulliNB
-#Applying Bernoulli Naive bayes
+##BernoulliNB
+Applying Bernoulli Naive bayes
 BNB = BernoulliNB().fit(X_train,y_train)
 y_train_pred_bnb = BNB.predict(X_train)
 y_test_pred_bnb = BNB.predict(X_test)
@@ -372,9 +372,9 @@ With the help of classification report we see that multinomial is performing bes
 
 Imputing missing values of recommended column
 recommended_nan = airline_data['recommended'].isna()
-# imputation of dependent variable with prediction MNB model
+ imputation of dependent variable with prediction MNB model
 main_df.loc[recommended_nan,'recommended'] = text_df_2['recommended']
-# replacing yes =1 and no =0 in recommended column
+ replacing yes =1 and no =0 in recommended column
 main_df['recommended'].replace({'yes':1,'no':0},inplace=True)
 
 Checking for imbalances - 
@@ -386,7 +386,7 @@ Now our data is free from NaN values.
 
 The review score column ranges from 1to 10. Classifying the reviews into positive and negative sentiments. 
 
-# classifying the review score into one of the 3 categories: Positive, Negative 
+classifying the review score into one of the 3 categories: Positive, Negative 
 def classify_review_score(df):
     """Return:
     - 'pos' if the review score is positive (>5),
@@ -398,12 +398,12 @@ def classify_review_score(df):
       pos_neg = 1
     return pos_neg
 
-# Adding a feature
+ Adding a feature
 airline_data['pos_neg'] = airline_data.apply(lambda x: classify_review_score(x),axis=1)
 
 4.4 HANDLING DATES
 
-# Function to convert the column to datetime object
+ Function to convert the column to datetime object
 def date_timestamp(df_ , date_col):
  
   if (isinstance(df_[date_col],dt.datetime)):
@@ -412,11 +412,11 @@ def date_timestamp(df_ , date_col):
     date_timestamp = dateutil.parser.parse(df_[date_col])
   return date_timestamp
 
-# Changing review_date object type
+ Changing review_date object type
 airline_data['review_date'] = airline_data.apply(lambda x: date_timestamp(x, 'review_date'), axis=1)
 
 Creating  a function to separate columns for date, month, year and fetch them from the review_date
-# Add other augmented features
+ Add other augmented features
 airline_data['review_date_day'] = airline_data.apply(lambda x: get_review_date_day(x),axis=1)
 airline_data['review_date_month'] = airline_data.apply(lambda x: get_review_date_month(x),axis=1)
 airline_data['review_date_year'] = airline_data.apply(lambda x: get_review_date_year(x),axis=1)
@@ -431,42 +431,42 @@ The final key is called compound, and it is a mix of the previous three here it 
 To see the source code of VADER https://www.nltk.org/_modules/nltk/sentiment/vader.html here.
 Using VADER to do sentimental analysis on review text and to extract sentiment of positive and negative out of it.
 
-#Copying data to sent_analysis
+Copying data to sent_analysis
 sent_analysis = airline_data.copy()
 
 We need to download and instal additional data for NLTK to use VADER; in fact, several of its tools require a second download step to get the requisite collection of data (typically coded lexicons) to function properly.
-# Downloading packages
+ Downloading packages
 nltk.download('punkt')
 nltk.download('vader_lexicon')
 
 Initializing sentiment Intensity analyzer.
-# Initiating
+ Initiating
 sid = SentimentIntensityAnalyzer()
 
 Copy all the review texts to a list named review_list (here)
-# copy review text to review list
+ copy review text to review list
 reviews_list = sent_analysis['review_text'].copy()
 
 Adding polarity score to the dataset
 
-# Augment the dataset with the overall polarity score of the review, as obtained using VADER on the review level.
+ Augment the dataset with the overall polarity score of the review, as obtained using VADER on the review level.
 reviews_polarity = []
 for i_review, review in enumerate(reviews_list):
     review_polarity_scores = sid.polarity_scores(review)
     review_polarity_score_compound = review_polarity_scores['compound']
     reviews_polarity.append(review_polarity_score_compound)
 
-# Adding polarity feature into sent_analysis data frame
+Adding polarity feature into sent_analysis data frame
 sent_analysis['polarity'] = reviews_polarity
 
-# Mapping recommended column. Replacing yes with 1 and no with 0
+ Mapping recommended column. Replacing yes with 1 and no with 0
 sent_analysis['recommended'] = sent_analysis['recommended'].map({'yes':1 ,'no':0})
 
 
 4.5.2 Plots based on polarity score :
 
 corr_values = sent_analysis[['polarity','pos_neg','recommended']].dropna(axis=0,how='any').corr()
-# Get heatmap of correlation matrix on the dataset
+ Get heatmap of correlation matrix on the dataset
 plt.figure(figsize=(6,4))
 sns.heatmap(corr_values,annot = True)
 
@@ -482,7 +482,7 @@ Now we'll create an auxiliary function that we'll use to make the code tidy and 
 4.5.3 Adding a new feature rec_nonrec:
 
 rec_nonrec - A polarity scoring rate feature. If the score is less than 0.7, the sentiment is negative and is filled with zero; if the score is greater than 0.7, the sentiment is positive and is filled with one.
-# classifying the polarity into one of the 2 categories: Positive, Negative 
+ classifying the polarity into one of the 2 categories: Positive, Negative 
 def classify_polarity_score(df):
     rec_nonrec = None
     if (df['polarity'] <= 0.7):
@@ -494,10 +494,10 @@ def classify_polarity_score(df):
 sent_analysis['rec_nonrec'] = sent_analysis.apply(lambda x: classify_polarity_score(x),axis=1)
 
 
-# Plot showing relation between pos_neg and recommended feature
+Plot showing relation between pos_neg and recommended feature
 x = sent_analysis.groupby([sent_analysis['recommended']])
 x['pos_neg'].value_counts().unstack().plot(kind= 'bar', figsize=(12,6))
-# Plot showing relation between rec_nonrec and recommended feature
+ Plot showing relation between rec_nonrec and recommended feature
 x = sent_analysis.groupby([sent_analysis['recommended']])
 x['rec_nonrec'].value_counts().unstack().plot(kind= 'bar', figsize=(12,6))
 
@@ -512,19 +512,19 @@ There are 20.87% different values between recommended and text_review sentiment.
 
 4.5 Word Cloud
 
-# Total Reviews word cloud
-# Import all necessary libraries
+ Total Reviews word cloud
+Import all necessary libraries
 from wordcloud import  WordCloud, STOPWORDS, ImageColorGenerator
-# Get stopwords from wordcloud library
+ Get stopwords from wordcloud library
 stopwords = set(STOPWORDS)
-# Add some extra words ad hoc for our purpose
+Add some extra words ad hoc for our purpose
 words_ = ['even','given','flight','found','asked','will','now','got','although','one']
 stopwords.update(words_)
-# join all reviews
+ join all reviews
 text = " ".join(review for review in sent_analysis.review_text)
-# Generate the image
+Generate the image
 wordcloud = WordCloud(stopwords=stopwords, background_color="white", max_words=50).generate(text)
-# visualize the image 
+ visualize the image 
 fig=plt.figure(figsize=(15, 8))
 plt.imshow(wordcloud, interpolation='bilinear')
 plt.axis("off")
@@ -541,7 +541,7 @@ From the word cloud we are able to see that the customer in the review is talkin
 
 
 
-CHAPTER 5 : WORKING WITH DIFFERENT MODELS
+#CHAPTER 5 : WORKING WITH DIFFERENT MODELS
 
 Models used are 
 Logistic Regression
@@ -609,7 +609,7 @@ Support Vector - the dividing line between two sets of points that maximises the
 
 5.7 MODELLING ON DATASET
 
-# importing all models from sklearn
+ importing all models from sklearn
   from sklearn.linear_model import LogisticRegression
   from sklearn.tree import DecisionTreeClassifier
   from sklearn.ensemble import RandomForestClassifier
@@ -617,7 +617,7 @@ Support Vector - the dividing line between two sets of points that maximises the
   from xgboost import XGBClassifier
   from sklearn.svm import LinearSVC
 
-# importing  metrics for evaluation  
+importing  metrics for evaluation  
   from sklearn.metrics import accuracy_score,confusion_matrix
   from sklearn.metrics import precision_score
   from sklearn.metrics import recall_score
@@ -626,7 +626,7 @@ Support Vector - the dividing line between two sets of points that maximises the
   from sklearn.metrics import roc_curve
   from sklearn.metrics import auc
 
-#declare the models
+declare the models
  lr_model=LogisticRegression()
  dt_model=DecisionTreeClassifier()
  rf_model=RandomForestClassifier()
@@ -637,19 +637,19 @@ Support Vector - the dividing line between two sets of points that maximises the
  
 
  
-#create a list of models
+create a list of models
  models=[lr_model,svc_model,Mnb_model,dt_model,rf_model,gbc_model,xgb_model]
  
-#creating dictionary for storing the confusion matrix
+creating dictionary for storing the confusion matrix
  dct_train={}
  dct_test={}
  Lst_imp=[]
-# function for calculation the evaluation matrix
+ function for calculation the evaluation matrix
  def score_model(X_train,y_train,X_test,y_test):
     df_columns=[]
     df=pd.DataFrame(columns=df_columns)
     i=0
-    #read model one by one
+    read model one by one
     for model in models:
         model.fit(X_train,y_train)
         y_pred=model.predict(X_test)
@@ -682,7 +682,7 @@ Support Vector - the dividing line between two sets of points that maximises the
         dct_test[model.__class__.__name__]=confusion_matrix(y_test,y_pred)
  
         i+=1
-    # Return the data frame and dictionary
+     Return the data frame and dictionary
     return df,dct_train,dct_test
 
 The performance is exceptionally good but we saw a scope of improvement where we can detect anomalies and replace the recommended column with the correct one.
@@ -708,11 +708,11 @@ We swapped them out for the right ones. On both the test and train sets, the res
 
 6.1 FEATURE IMPORTANCE
 
-# Get feature importance
+ Get feature importance
 features = X_train.columns
 importances = rf_optimal_model.feature_importances_
 indices = np.argsort(importances)
-# Plot feature importance graph
+ Plot feature importance graph
 plt.title('Feature Importance')
 plt.barh(range(len(indices)), importances[indices], color='red', align='center')
 plt.yticks(range(len(indices)), [features[i] for i in indices])
@@ -720,7 +720,7 @@ plt.xlabel('Relative Importance')
 
 
 
-# Get the Shap summary of important features on test data to analyze how each feature contributes in the insurance decisioning process.
+ Get the Shap summary of important features on test data to analyze how each feature contributes in the insurance decisioning process.
 import shap
 X_shap=X_test
 explainer = shap.TreeExplainer(rf_optimal_model)
@@ -731,7 +731,7 @@ shap.summary_plot(shap_values[1], X_shap, plot_type="dot")
 
 6.2 RESULTS OF MODELS
 
-# Getting a data frame with all results of models
+ Getting a data frame with all results of models
 result_df,dct_train,dct_test=score_model(X_train,y_train,X_test,y_test)
 
 Model Results on test data set
@@ -856,7 +856,7 @@ XG Boost
 Note : Time is total time by that model.
 
 
-#confusion matrix of train and test sets
+confusion matrix of train and test sets
 for key,value in dct_train.items():
   print(f'Confusion matrix for {key}')
   print(value)
@@ -867,7 +867,7 @@ for key,value in dct_test.items():
 
 
 
-6.3 CONCLUSIONS
+#6.3 CONCLUSIONS
 We have built classifier models using 7 different types of classifiers and all these are able to give accuracy of more than 95%.
 The most important features are Overall rating and Value for money that contribute to a model's prediction.
 The classifier model developed will enable airlines ability to identify impactful passengers who can help in bringing more revenue.
