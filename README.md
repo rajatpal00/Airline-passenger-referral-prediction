@@ -63,13 +63,12 @@ rec_nonrec - A polarity scoring rate feature. If the score is less than 0.7, the
 
 #  WORKING WITH DIFFERENT MODELS
 
-## Models used are 
-## Logistic Regression
-## DecisionTree
-## Random Forest
-## Gradient Boosting
-## XG Boost
-## SVM
+### Logistic Regression
+### DecisionTree
+### Random Forest
+### Gradient Boosting
+### XG Boost
+### SVM
 
 
 
